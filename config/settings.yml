@@ -1,0 +1,8 @@
+plugins:
+  enable_replace_translations_global:
+    default: true
+    client: false
+  replace_translations_replacements:
+    client: false
+    type: list
+    default: "zh_CN:话题=>贴文"
