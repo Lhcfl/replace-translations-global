@@ -10,6 +10,15 @@
 enabled_site_setting :enable_replace_translations_global
 
 after_initialize do
+
+  on(:site_setting_changed) do |setting_name, old_value, new_value|
+    if setting_name == :replace_translations_replacements
+      Scheduler::Defer.later("Setup Translations Replacement") do
+        ::JsLocaleHelper.clear_cache!
+      end
+    end
+  end
+
   module ::JsLocaleHelper
     class << self
       alias_method :load_translations_old, :load_translations
@@ -18,7 +27,7 @@ after_initialize do
         begin
           replacements = {}
           SiteSetting.replace_translations_replacements_map.each do |rule|
-            matched = /([\s\S]+):([\s\S]+)=>([\s\S]*)/.match(rule)
+            matched = /([^:]+):([\s\S]+)=>([\s\S]*)/.match(rule)
             if (matched.present?)
               replacements[matched[1]] ||= []
               replacements[matched[1]].push([matched[2], matched[3]])
@@ -30,7 +39,7 @@ after_initialize do
             ret.deep_transform_values do |val|
               if val.respond_to? :gsub
                 rules.each do |ori, rep|
-                  val.gsub! ori, rep
+                  val.gsub! Regexp.new(ori), rep
                 end
               end
               val

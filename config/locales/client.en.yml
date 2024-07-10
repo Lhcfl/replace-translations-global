@@ -1,4 +1,4 @@
 en:
   site_settings:
     enable_replace_translations_global: "enable replace_translations_global plugin"
-    replace_translations_replacements: "format: locale:from=>to . For example: en:Topic=>Thread"
+    replace_translations_replacements: "format: locale:from=>to . For example: en:Topic=>Thread . Note: from is a regular expression"
